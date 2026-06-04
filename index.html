@@ -99,8 +99,8 @@ body::after{
 /* ══════════════════════════════
    GAME
 ══════════════════════════════ */
-.game-section{width:100%;max-width:880px;padding:0 16px 60px;display:flex;flex-direction:column;align-items:center;}
-.game-header{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.game-section{width:100%;max-width:880px;padding:0 8px 60px;display:flex;flex-direction:column;align-items:center;}
+.game-header{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
 .game-title{font-family:'Orbitron',monospace;font-size:10px;letter-spacing:4px;color:rgba(0,245,212,.4);}
 .game-stats{display:flex;gap:22px;font-size:11px;}
 .stat{text-align:center;color:rgba(0,245,212,.35);}
@@ -114,6 +114,11 @@ body::after{
   background:rgba(0,0,0,.55);
   backdrop-filter:blur(4px);
   cursor:pointer;outline:none;
+  /* Scale canvas to fit screen width on mobile */
+  width:100%;
+  height:auto;
+  max-width:860px;
+  touch-action:none;
 }
 
 .level-bar-wrap{
@@ -189,6 +194,30 @@ body::after{
 .notif-body{font-size:13px;color:rgba(255,255,255,.82);line-height:1.6}
 .notif-amount{font-family:'Orbitron',monospace;color:#ffd700;font-weight:700}
 .ntype-buy{color:#00ff88}.ntype-sell{color:#ff4466}
+
+/* ══ MOBILE ══ */
+@media(max-width:600px){
+  .logo-wrap{width:130px;height:130px;margin:28px 0 18px}
+  .logo-img{width:130px;height:130px}
+  .logo-wrap::before{inset:-12px}
+  .logo-wrap::after{inset:-22px}
+  .digit-slot{width:36px;height:58px}
+  .digit-slot.sym{width:24px}
+  .digit-slot.dot{width:14px}
+  .digit-face{font-size:46px;height:58px}
+  .digit-slot.sym .digit-face{font-size:34px}
+  .digit-slot.dot .digit-face{font-size:46px}
+  .digit-slot::before,.digit-slot::after{height:18px}
+  .price-change{font-size:12px}
+  .price-meta{gap:16px;font-size:10px}
+  .price-meta span strong{font-size:12px}
+  .game-title{font-size:9px}
+  .game-stats{gap:12px;font-size:10px}
+  .stat strong{font-size:12px}
+  .hint{font-size:9px}
+  .btn-pause{font-size:9px;padding:6px 12px}
+  .htp-grid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
@@ -638,8 +667,13 @@ function now(){return new Date().toLocaleTimeString();}
 
 var CVS = document.getElementById('gameCanvas');
 var CX  = CVS.getContext('2d');
-var W   = CVS.width;
-var H   = CVS.height;
+
+// Internal resolution stays 860x220 for consistent physics
+// CSS scales it down on mobile via width:100%
+var W   = 860;
+var H   = 220;
+CVS.width  = W;
+CVS.height = H;
 var GND = H - 40;   // y of ground line (top of floor)
 var HERO_H = 44, HERO_W = 44;
 var GRAVITY    = 0.72;
