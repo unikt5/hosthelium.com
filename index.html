@@ -814,7 +814,7 @@ document.getElementById('btnPause').addEventListener('click', function(e){
 ══════════════════════════════════════════ */
 buildDrum('$0.0000');
 fetchPrice();
-setInterval(fetchPrice, 300);
+setInterval(fetchPrice, 10000);
 document.getElementById('hiStat').textContent = hiScore;
 
 // Init hero position for idle display
