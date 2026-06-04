@@ -516,7 +516,34 @@ body::after{
 ══════════════════════════════════════════ */
 var FACE_H=84,drumSlots=[],lastStr='',lastPrice=null,colorTimer=null;
 function buildDrum(s){var drum=document.getElementById('priceDrum');drum.innerHTML='';drumSlots=[];lastStr='';for(var i=0;i<s.length;i++){var ch=s[i],isD='0123456789'.indexOf(ch)>=0;var slot=document.createElement('div');slot.className='digit-slot'+(ch==='.'?' dot':ch==='$'?' sym':'');var reel=document.createElement('div');reel.className='digit-reel';var faces=[];if(isD){for(var r=0;r<3;r++)for(var d=0;d<=9;d++){var f=document.createElement('div');f.className='digit-face';f.textContent=d;reel.appendChild(f);faces.push(f);}}else{var f=document.createElement('div');f.className='digit-face';f.textContent=ch;reel.appendChild(f);faces.push(f);}slot.appendChild(reel);drum.appendChild(slot);drumSlots.push({reel:reel,faces:faces,cur:isD?0:-1,isD:isD});}}
-function setDrum(s,dir){if(s.length!==lastStr.length)buildDrum(s);lastStr=s;for(var i=0;i<s.length;i++){var sl=drumSlots[i];if(!sl||!sl.isD)continue;var nd=parseInt(s[i],10),od=sl.cur;if(nd===od)continue;sl.cur=nd;var fi=dir>=0?(20+od):od,ti=10+nd;(function(r,fp,tp){r.style.transition='none';r.style.transform='translateY(-'+(fp*FACE_H)+'px)';r.getBoundingClientRect();r.style.transition='transform .5s cubic-bezier(.22,.68,0,1.2)';r.style.transform='translateY(-'+(tp*FACE_H)+'px)';})(sl.reel,fi,ti);}var cls=dir>0?'up':dir<0?'down':'';drumSlots.forEach(function(sl){sl.faces.forEach(function(f){f.className='digit-face'+(cls?' '+cls:'');});});if(colorTimer)clearTimeout(colorTimer);if(cls)colorTimer=setTimeout(function(){drumSlots.forEach(function(sl){sl.faces.forEach(function(f){f.className='digit-face';});});},2500);}
+function setDrum(s,dir){
+  if(s.length!==lastStr.length)buildDrum(s);
+  lastStr=s;
+  for(var i=0;i<s.length;i++){
+    var sl=drumSlots[i];
+    if(!sl||!sl.isD)continue;
+    var nd=parseInt(s[i],10),od=sl.cur;
+    if(nd===od)continue;
+    sl.cur=nd;
+    // Read actual rendered face height (works on all screen sizes)
+    var fh = sl.faces[0] ? sl.faces[0].getBoundingClientRect().height : FACE_H;
+    if(fh < 4) fh = FACE_H; // fallback if not visible yet
+    var fi=dir>=0?(20+od):od, ti=10+nd;
+    (function(r,fp,tp,faceH){
+      r.style.transition='none';
+      r.style.transform='translateY(-'+(fp*faceH)+'px)';
+      r.getBoundingClientRect();
+      r.style.transition='transform .5s cubic-bezier(.22,.68,0,1.2)';
+      r.style.transform='translateY(-'+(tp*faceH)+'px)';
+    })(sl.reel,fi,ti,fh);
+  }
+  var cls=dir>0?'up':dir<0?'down':'';
+  drumSlots.forEach(function(sl){sl.faces.forEach(function(f){f.className='digit-face'+(cls?' '+cls:'');});});
+  if(colorTimer)clearTimeout(colorTimer);
+  if(cls)colorTimer=setTimeout(function(){
+    drumSlots.forEach(function(sl){sl.faces.forEach(function(f){f.className='digit-face';});});
+  },2500);
+}
 function priceStr(u){if(u<1)return'$'+u.toFixed(4);if(u<10)return'$'+u.toFixed(4);if(u<100)return'$'+u.toFixed(3);return'$'+u.toFixed(2);}
 // ── Price state ──
 var lastRealPrice = null;
