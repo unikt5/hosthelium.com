@@ -62,24 +62,43 @@ body::after{
   color:rgba(0,245,212,.45);margin-bottom:12px;
 }
 .price-drum{display:flex;align-items:center;gap:2px;margin-bottom:10px;}
-.digit-slot{position:relative;width:52px;height:84px;overflow:hidden;border-radius:6px;}
+.digit-slot{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:52px;height:84px;overflow:hidden;border-radius:6px;
+  perspective:300px;
+}
 .digit-slot.sym{width:34px}.digit-slot.dot{width:20px}
-.digit-reel{position:absolute;top:0;left:0;width:100%;display:flex;flex-direction:column;}
 .digit-face{
-  width:100%;height:84px;display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;
   font-family:'Orbitron',monospace;font-size:68px;font-weight:900;
   color:#00f5d4;
   text-shadow:0 0 24px rgba(0,245,212,.6),0 0 60px rgba(0,245,212,.2);
-  line-height:1;transition:color .4s,text-shadow .4s;
+  line-height:1;
+  transition:color .4s, text-shadow .4s;
+  transform-origin:center center;
+  backface-visibility:hidden;
 }
-.digit-slot.sym .digit-face{font-size:50px}.digit-slot.dot .digit-face{font-size:68px}
+.digit-slot.sym .digit-face{font-size:50px}
+.digit-slot.dot .digit-face{font-size:68px}
 .digit-face.up  {color:#00ff88;text-shadow:0 0 24px rgba(0,255,136,.7),0 0 60px rgba(0,255,136,.25)}
 .digit-face.down{color:#ff4466;text-shadow:0 0 24px rgba(255,68,102,.7),0 0 60px rgba(255,68,102,.25)}
-.digit-slot::before,.digit-slot::after{
-  content:'';position:absolute;left:0;right:0;height:26px;z-index:2;pointer-events:none;
+
+/* Flip animations — no pixel math, works on any screen size */
+@keyframes flipUp{
+  0%  {transform:translateY(0)   scaleY(1);   opacity:1}
+  45% {transform:translateY(-60%) scaleY(0.3); opacity:0.3}
+  55% {transform:translateY(60%)  scaleY(0.3); opacity:0.3}
+  100%{transform:translateY(0)   scaleY(1);   opacity:1}
 }
-.digit-slot::before{top:0;background:linear-gradient(rgba(0,0,0,.85),transparent)}
-.digit-slot::after{bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+@keyframes flipDown{
+  0%  {transform:translateY(0)    scaleY(1);   opacity:1}
+  45% {transform:translateY(60%)  scaleY(0.3); opacity:0.3}
+  55% {transform:translateY(-60%) scaleY(0.3); opacity:0.3}
+  100%{transform:translateY(0)    scaleY(1);   opacity:1}
+}
+.digit-face.flip-up  {animation:flipUp   .28s ease-in-out}
+.digit-face.flip-down{animation:flipDown .28s ease-in-out}
 
 .price-change{font-size:14px;letter-spacing:2px;margin-bottom:16px;min-height:20px;transition:color .4s;}
 .price-meta{
@@ -179,6 +198,63 @@ body::after{
 }
 .htp-teal{color:#00f5d4;}.htp-red{color:#ff4466;}.htp-gold{color:#ffd700;}
 
+/* SHARE BUTTON */
+.share-overlay{
+  position:fixed;inset:0;z-index:2000;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(6px);
+  animation:fadeIn .3s ease;
+}
+.share-box{
+  background:rgba(0,5,4,0.97);
+  border:1px solid rgba(0,245,212,.25);
+  border-radius:12px;
+  padding:28px 32px;
+  text-align:center;
+  max-width:320px;width:90%;
+  box-shadow:0 0 40px rgba(0,245,212,.08);
+}
+.share-title{
+  font-family:'Orbitron',monospace;
+  font-size:13px;letter-spacing:3px;
+  color:#ff4466;margin-bottom:6px;
+}
+.share-score{
+  font-family:'Orbitron',monospace;
+  font-size:28px;font-weight:900;
+  color:#00f5d4;
+  text-shadow:0 0 20px rgba(0,245,212,.5);
+  margin-bottom:4px;
+}
+.share-sub{
+  font-size:11px;color:rgba(255,255,255,.35);
+  letter-spacing:2px;margin-bottom:22px;
+}
+.btn-share-x{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#000;border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-family:'Orbitron',monospace;
+  font-size:11px;letter-spacing:2px;
+  padding:12px 24px;border-radius:8px;
+  cursor:pointer;transition:all .2s;
+  text-decoration:none;margin-bottom:12px;
+  width:100%;justify-content:center;
+}
+.btn-share-x:hover{background:#111;border-color:rgba(255,255,255,.5);}
+.btn-share-x svg{width:18px;height:18px;fill:#fff;flex-shrink:0;}
+.btn-try-again{
+  display:block;width:100%;
+  background:transparent;
+  border:1px solid rgba(0,245,212,.3);
+  color:rgba(0,245,212,.7);
+  font-family:'Orbitron',monospace;
+  font-size:10px;letter-spacing:2px;
+  padding:10px;border-radius:8px;
+  cursor:pointer;transition:all .2s;
+}
+.btn-try-again:hover{background:rgba(0,245,212,.08);border-color:#00f5d4;color:#00f5d4;}
+
 /* NOTIFICATIONS */
 .notif-wrap{position:fixed;bottom:24px;right:24px;z-index:1000;display:flex;flex-direction:column;gap:10px;pointer-events:none}
 .notif{
@@ -204,10 +280,9 @@ body::after{
   .digit-slot{width:36px;height:58px}
   .digit-slot.sym{width:24px}
   .digit-slot.dot{width:14px}
-  .digit-face{font-size:46px;height:58px}
+  .digit-face{font-size:46px}
   .digit-slot.sym .digit-face{font-size:34px}
   .digit-slot.dot .digit-face{font-size:46px}
-  .digit-slot::before,.digit-slot::after{height:18px}
   .price-change{font-size:12px}
   .price-meta{gap:16px;font-size:10px}
   .price-meta span strong{font-size:12px}
@@ -298,6 +373,22 @@ body::after{
         <div class="htp-item">🏆 <span class="htp-gold">Level 20 = special HNT reward!</span></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- SHARE OVERLAY -->
+<div class="share-overlay" id="shareOverlay" style="display:none">
+  <div class="share-box">
+    <div class="share-title">GAME OVER</div>
+    <div class="share-score" id="shareScore">0</div>
+    <div class="share-sub" id="shareSub">LEVEL 1 &nbsp;·&nbsp; HNT $0.0000</div>
+    <a class="btn-share-x" id="btnShareX" href="#" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      </svg>
+      SHARE ON X
+    </a>
+    <button class="btn-try-again" id="btnTryAgain">▶ TRY AGAIN</button>
   </div>
 </div>
 
@@ -514,36 +605,62 @@ body::after{
 /* ══════════════════════════════════════════
    PRICE ENGINE
 ══════════════════════════════════════════ */
-var FACE_H=84,drumSlots=[],lastStr='',lastPrice=null,colorTimer=null;
-function buildDrum(s){var drum=document.getElementById('priceDrum');drum.innerHTML='';drumSlots=[];lastStr='';for(var i=0;i<s.length;i++){var ch=s[i],isD='0123456789'.indexOf(ch)>=0;var slot=document.createElement('div');slot.className='digit-slot'+(ch==='.'?' dot':ch==='$'?' sym':'');var reel=document.createElement('div');reel.className='digit-reel';var faces=[];if(isD){for(var r=0;r<3;r++)for(var d=0;d<=9;d++){var f=document.createElement('div');f.className='digit-face';f.textContent=d;reel.appendChild(f);faces.push(f);}}else{var f=document.createElement('div');f.className='digit-face';f.textContent=ch;reel.appendChild(f);faces.push(f);}slot.appendChild(reel);drum.appendChild(slot);drumSlots.push({reel:reel,faces:faces,cur:isD?0:-1,isD:isD});}}
+var drumSlots=[],lastStr='',lastPrice=null,colorTimer=null;
+
+function buildDrum(s){
+  var drum=document.getElementById('priceDrum');
+  drum.innerHTML=''; drumSlots=[]; lastStr='';
+  for(var i=0;i<s.length;i++){
+    var ch=s[i], isD='0123456789'.indexOf(ch)>=0;
+    var slot=document.createElement('div');
+    slot.className='digit-slot'+(ch==='.'?' dot':ch==='$'?' sym':'');
+    var face=document.createElement('div');
+    face.className='digit-face';
+    face.textContent=ch;
+    slot.appendChild(face);
+    drum.appendChild(slot);
+    drumSlots.push({slot:slot, face:face, cur:ch, isD:isD});
+  }
+}
+
 function setDrum(s,dir){
-  if(s.length!==lastStr.length)buildDrum(s);
+  if(s.length!==lastStr.length){ buildDrum(s); lastStr=s; applyDrumColors(dir); return; }
   lastStr=s;
   for(var i=0;i<s.length;i++){
     var sl=drumSlots[i];
-    if(!sl||!sl.isD)continue;
-    var nd=parseInt(s[i],10),od=sl.cur;
-    if(nd===od)continue;
+    if(!sl||!sl.isD) continue;
+    var nd=s[i];
+    if(nd===sl.cur) continue;
     sl.cur=nd;
-    // Read actual rendered face height (works on all screen sizes)
-    var fh = sl.faces[0] ? sl.faces[0].getBoundingClientRect().height : FACE_H;
-    if(fh < 4) fh = FACE_H; // fallback if not visible yet
-    var fi=dir>=0?(20+od):od, ti=10+nd;
-    (function(r,fp,tp,faceH){
-      r.style.transition='none';
-      r.style.transform='translateY(-'+(fp*faceH)+'px)';
-      r.getBoundingClientRect();
-      r.style.transition='transform .5s cubic-bezier(.22,.68,0,1.2)';
-      r.style.transform='translateY(-'+(tp*faceH)+'px)';
-    })(sl.reel,fi,ti,fh);
+    // Animate: flip out old, flip in new using CSS keyframe
+    animateDigit(sl.face, nd, dir);
   }
-  var cls=dir>0?'up':dir<0?'down':'';
-  drumSlots.forEach(function(sl){sl.faces.forEach(function(f){f.className='digit-face'+(cls?' '+cls:'');});});
-  if(colorTimer)clearTimeout(colorTimer);
-  if(cls)colorTimer=setTimeout(function(){
-    drumSlots.forEach(function(sl){sl.faces.forEach(function(f){f.className='digit-face';});});
-  },2500);
+  applyDrumColors(dir);
 }
+
+function animateDigit(face, newChar, dir){
+  // Simple: add flip class, change number halfway through
+  face.classList.remove('flip-up','flip-down');
+  void face.offsetWidth; // reflow
+  face.classList.add(dir>=0 ? 'flip-up' : 'flip-down');
+  setTimeout(function(){
+    face.textContent = newChar;
+  }, 140);
+}
+
+function applyDrumColors(dir){
+  var cls = dir>0?'up':dir<0?'down':'';
+  drumSlots.forEach(function(sl){
+    sl.face.className = 'digit-face' + (cls?' '+cls:'');
+  });
+  if(colorTimer) clearTimeout(colorTimer);
+  if(cls){
+    colorTimer = setTimeout(function(){
+      drumSlots.forEach(function(sl){ sl.face.className='digit-face'; });
+    }, 2500);
+  }
+}
+
 function priceStr(u){if(u<1)return'$'+u.toFixed(4);if(u<10)return'$'+u.toFixed(4);if(u<100)return'$'+u.toFixed(3);return'$'+u.toFixed(2);}
 // ── Price state ──
 var lastRealPrice = null;
@@ -916,10 +1033,9 @@ function triggerDead() {
   STATE = 'DEAD';
   if(raf){ cancelAnimationFrame(raf); raf = null; }
   updateHUD();
-  // Draw one last frame with dead screen
   drawScene();
-  drawOverlay('GAME OVER', 'rgba(0,0,0,0.6)', '#ff4466',
-    'Score: ' + score + '   Best: ' + hiScore + '\nClick / Space to restart');
+  // Show share overlay after short delay (let death particles settle)
+  setTimeout(showShareOverlay, 600);
 }
 
 /* ══════════════════════════════════════════
@@ -1236,6 +1352,20 @@ function updateHUD(){
 /* ══════════════════════════════════════════
    HOW TO PLAY toggle
 ══════════════════════════════════════════ */
+function showShareOverlay(){
+  var overlay = document.getElementById('shareOverlay');
+  var price = (lastRealPrice && lastRealPrice>0) ? priceStr(lastRealPrice) : '---';
+  document.getElementById('shareScore').textContent = score;
+  document.getElementById('shareSub').textContent = 'LEVEL '+level+'  ·  HNT $'+price;
+  var tweet = '🎮 Just scored '+score+' pts on Level '+level+' playing HNT Runner!\n\n📡 Live HNT: $'+price+'\n\nCan you beat Level 20? 🏆\nhosthelium.com\n\n#HNT #Helium #DePIN #Web3';
+  document.getElementById('btnShareX').href = 'https://twitter.com/intent/tweet?text='+encodeURIComponent(tweet);
+  overlay.style.display = 'flex';
+}
+
+function hideShareOverlay(){
+  document.getElementById('shareOverlay').style.display = 'none';
+}
+
 function toggleHTP(){
   var b=document.getElementById('htpBody');
   var t=document.getElementById('howToPlay').querySelector('.htp-toggle');
